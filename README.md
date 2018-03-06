@@ -193,9 +193,9 @@ $ vim /etc/ansible/openstack.yml
 ```
 Change at least those 3 variables:
 ```
-      username: aaa
-      password: bbb
-      project_name: ccc
+      username: "The OS_USERNAME from the openrc.sh file"
+      password: "The password for the OpenStack User"
+      project_name: "The OS_TENANT_NAME from the openrc.sh file"
 ```
 
 Also, be sure that REGION_NAME is correct.
