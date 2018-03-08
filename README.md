@@ -158,7 +158,7 @@ $ chmod 600 ~/.ssh/deploy.key
 
 ## Run bootstrap script
 ```sh
-$ ./bootstrap.sh
+$ python bootstrap.py
 ```
 
 This will create 9 instances, connected to both public network (Ext-Net) and vRack (public), one for each OpenStack services (see architecture) and one deployer that you will use as jump host / ansible executor.

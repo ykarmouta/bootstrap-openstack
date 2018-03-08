@@ -87,3 +87,11 @@ ansible:
   fail_on_errors: True
 EOF
 
+cat <<EOF > /etc/network/interfaces.d/51-management.cfg
+auto ens5
+iface ens5 inet static
+        address {IP}
+        netmask 255.255.255.0
+EOF
+
+ifup ens5
