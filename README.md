@@ -123,7 +123,7 @@ Name it **public** and **disable DHCP** (important, as we refer to it with its n
 
 To do that, you can run the script data/order_ip_block.py
 ```sh
-$ python3 order_ip_block.py
+python3 order_ip_block.py
 Please pay the BC 12345678 --> https://www.ovh.com/cgi-bin/order/displayOrder.cgi?orderId=12345678&orderPassword=ABCD
 Done
 ```
@@ -135,30 +135,32 @@ Once your BC (Bon de Commande / order) is paid, you should receive a /28 in your
 # Bootstrap
 ## Clone this repo
 ```sh
-$ git clone https://github.com/arnaudmorin/bootstrap-openstack.git
-$ cd bootstrap-openstack
+git clone https://github.com/arnaudmorin/bootstrap-openstack.git
+cd bootstrap-openstack
 ```
 
 ## Install openstack client
 ```sh
-$ pip install python-openstackclient
+pip install python-openstackclient
+pip install python-keystoneclient
+pip install python-neutronclient
 ```
 
 ## Source openrc file
 ```sh
-$ source openrc.sh
+source openrc.sh
 ```
 
 ## Add a SSH key
 Name it **deploy** (important, we will refer to it in bootstrap script as well).
 ```sh
-$ openstack keypair create --private-key ~/.ssh/deploy.key deploy
-$ chmod 600 ~/.ssh/deploy.key
+openstack keypair create --private-key ~/.ssh/deploy.key deploy
+chmod 600 ~/.ssh/deploy.key
 ```
 
 ## Run bootstrap script
 ```sh
-$ python bootstrap.py
+python bootstrap.py
 ```
 
 This will create 9 instances, connected to both public network (Ext-Net) and vRack (public), one for each OpenStack services (see architecture) and one deployer that you will use as jump host / ansible executor.
@@ -167,7 +169,7 @@ Wait for the instances to be ACTIVE.
 You can check the status with:
 
 ```sh
-$ openstack server list
+openstack server list
 ```
 
 # Deploy
@@ -175,12 +177,12 @@ $ openstack server list
 Now that your infrastructure is ready, you can start the configuration of OpenStack itself from the deployer machine.
 
 ```sh
-$ ssh -i ~/.ssh/deploy.key ubuntu@deployer_ip    # Replace deployer_ip with the real IP.
+ssh -i ~/.ssh/deploy.key ubuntu@deployer_ip    # Replace deployer_ip with the real IP.
 ```
 
 Now that you are inside the deployer, be root
 ```sh
-$ sudo su -
+sudo su -
 ```
 
 ## Ansible
@@ -189,7 +191,7 @@ Ansible is using a dynamic inventory file that will ask openstack all instances 
 You must configure an openstack.yml file to help this dynamic inventory to set up.
 To do so, edit the file /etc/ansible/openstack.yml
 ```sh
-$ vim /etc/ansible/openstack.yml
+vim /etc/ansible/openstack.yml
 ```
 Change at least those 3 variables:
 ```
@@ -203,7 +205,7 @@ You can find the value for these variables in your openrc.sh file.
 
 ### Check that the dynamic inventory works
 ```sh
-$ /etc/ansible/hosts --list
+/etc/ansible/hosts --list
 ```
 
 should return something ending like:
@@ -226,67 +228,67 @@ should return something ending like:
 ### deployer
 Run ansible on deployer itself, so it can learn the different IP addresses of your infrastructure.
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/deployer.yml
+ansible-playbook /etc/ansible/playbooks/deployer.yml
 ```
 
 ### rabbit
 Continue with rabbit
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/rabbit.yml
+ansible-playbook /etc/ansible/playbooks/rabbit.yml
 ```
 
 ### mysql
 Then mysql
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/mysql.yml
+ansible-playbook /etc/ansible/playbooks/mysql.yml
 ```
 
 ### keystone
 Then keystone
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/keystone.yml
+ansible-playbook /etc/ansible/playbooks/keystone.yml
 ```
 
 ### glance
 Then glance
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/glance.yml
+ansible-playbook /etc/ansible/playbooks/glance.yml
 ```
 
 ### nova
 Then nova
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/nova.yml
+ansible-playbook /etc/ansible/playbooks/nova.yml
 ```
 
 ### neutron
 Then neutron
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/neutron.yml
+ansible-playbook /etc/ansible/playbooks/neutron.yml
 ```
 
 ### horizon
 Then horizon
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/horizon.yml
+ansible-playbook /etc/ansible/playbooks/horizon.yml
 ```
 
 ### compute
 And finally, compute
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/compute.yml
+ansible-playbook /etc/ansible/playbooks/compute.yml
 ```
 
 ### nova
 Then nova again, to register the compute in nova cell
 ```sh
-$ ansible-playbook /etc/ansible/playbooks/nova.yml
+ansible-playbook /etc/ansible/playbooks/nova.yml
 ```
 
 ### All in one shot
 Or if you want to perform all in one shot:
 ```sh
-$ for s in deployer rabbit mysql keystone glance nova neutron horizon compute nova ; do ansible-playbook /etc/ansible/playbooks/$s.yml ; done
+for s in deployer rabbit mysql keystone glance nova neutron horizon compute nova ; do ansible-playbook /etc/ansible/playbooks/$s.yml ; done
 ```
 
 # Configure
