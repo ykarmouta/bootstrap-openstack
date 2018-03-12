@@ -68,7 +68,7 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDY15cdBmIs2XOpe4EiFCsaY6bmUmK/GysMoLl4UG51
 EOF
 
 cd /root/
-git clone https://github.com/arnaudmorin/bootstrap-openstack.git
+git clone https://github.com/ykarmouta/bootstrap-openstack.git
 mv /etc/ansible/ /etc/ansible.old
 ln -s /root/bootstrap-openstack/ansible/ /etc/ansible
 
