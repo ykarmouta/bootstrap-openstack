@@ -23,6 +23,8 @@
 
   - name: install rabbitmq-server
     apt: name=rabbitmq-server state=latest
+  - name: restrict rabbitmq address
+    lineinfile: path=/etc/rabbitmq/rabbitmq-env.conf insertafter="#NODE_IP_ADDRESS=127.0.0.1" regexp="^NODE_IP_ADDRESS=" line="NODE_IP_ADDRESS={{hostvars[inventory_hostname]['ansible_ens5']['ipv4']['address']}}"
   - name: check openstack user
     shell: rabbitmqctl list_users | grep -q openstack
     register: user
